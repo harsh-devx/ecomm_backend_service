@@ -1,4 +1,6 @@
 import { cartService } from "../services/CartService";
+import { orderService } from "../services/OrderService";
+import { logDetailedObject } from "../utils/tools";
 
 describe('Order Flow Test', () => {
 
@@ -21,5 +23,17 @@ describe('Order Flow Test', () => {
 
         console.log('Item successfully added to cart.');
 
+    });
+
+    test('Checkout from cart', async () => {
+
+        cartService.addItem(productId, quantity);
+
+        const order = await orderService.createOrder();
+
+        expect(order).toHaveProperty('orderId');
+        expect(order).toHaveProperty('orderValue');
+
+        logDetailedObject('Order successfully created:', order);
     });
 });
