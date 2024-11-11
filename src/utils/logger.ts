@@ -1,7 +1,9 @@
 import pino, { type Logger } from "pino";
 
 const level = process.env.NODE_ENV === "development" ? "trace" : "info";
-const _logger: Logger = pino({ level });
+const _logger: Logger = pino({
+    level
+});
 
 export type LoggerType = {
     debug: (message: string, context?: any) => void;

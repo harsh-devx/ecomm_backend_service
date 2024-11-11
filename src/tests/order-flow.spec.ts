@@ -1,3 +1,4 @@
+import { adminService } from "../services/AdminService";
 import { cartService } from "../services/CartService";
 import { discountService } from "../services/DiscountService";
 import { orderService } from "../services/OrderService";
@@ -57,4 +58,39 @@ describe('Order Flow Test', () => {
 
         expect(totalAfterDiscount).toBeLessThan(totalBeforeDiscount);
     });
+
+    test('Generate eligible discount and apply to cart', async () => {
+
+        // Place first order
+        cartService.addItem(productId, quantity);
+        const order1 = await orderService.createOrder();
+        console.log('First Order:', order1);
+
+        // Place second order
+        cartService.addItem(productId, quantity);
+        const order2 = await orderService.createOrder();
+        console.log('Second Order:', order2);
+
+        expect(order1).toHaveProperty('orderId');
+        expect(order2).toHaveProperty('orderId');
+
+
+        const discountId = await adminService.generateDiscountCodeIfEligible();
+
+        console.log('Discount Id:', discountId);
+
+        cartService.addItem(productId, quantity);
+
+        const order3 = await orderService.createOrder(discountId!);
+
+        console.log("Discount successfully applied to the order.");
+
+        const totalBeforeDiscount = order3.cart.totalCartValue;
+        const totalAfterDiscount = order3.orderValue;
+
+        logDetailedObject('Order with discount:', order3);
+
+        expect(totalAfterDiscount).toBeLessThan(totalBeforeDiscount);
+    });
+
 });
