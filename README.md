@@ -1,36 +1,198 @@
-# Assignment
+# E-commerce Backend API Documentation
 
-You are designing an ecommerce store. Clients can add items to their cart and checkout to successfully place an order. Every *n*th order gets a coupon code for 10% discount and can apply to their cart. 
+## Overview
 
-We would like you to design and implement APIs for adding items to cart and checkout functionality. The checkout API would validate if the discount code is valid before giving the discount. 
+This document provides a guide to the main API endpoints for managing orders, discounts, and retrieving analytics for your e-commerce backend. The backend is built with TypeScript and Bun and provides functionalities for adding items to a cart, applying discounts, checking out, and viewing order summaries.
 
-Building a UI that showcases the functionality is a stretch goal. If you are primarily a backend engineer, you can also submit postman or REST client or equivalent.
+## Base URL
 
-The store also has two admin API's:
-1. Generate a discount code if the condition above is satisfied.
-2. Lists count of items purchased, total purchase amount, list of discount codes and total discount amount. 
+Ensure the base URL is correctly set in your environment. By default, it's set to:
 
-You can build this with a technology stack that you are comfortable with. You would push the code to your github repo and share the link once its complete. We would like to see your commits that show progression and thought process as to how you are completing the exercise. 
+```text
+{{baseUrl}} = http://localhost:3000
+```
 
-Things that you will be evaluated on:
+## Endpoints
 
-1.	Functional code
-2.	Code quality
-3.	UI in a framework of your choice
-4.	Code comments, readme docs
-5.	Unit tests
+### 1. Add Item to Cart
 
-Assumptions you can make:
-1.	The API’s don’t need a backend store. It can be an in-memory store.
+- **Endpoint:** `POST /cart/add-item`
+- **Description:** Adds an item to the user’s cart.
+- **Request Body:**
 
+  ```json
+  {
+    "productId": "prod-001",
+    "quantity": 2
+  }
+  ```
 
-## FAQ:
-**Q**: Can a discount code be used multiple times?
+- **Response:** Contains the updated cart details with the newly added item.
+- **Response:**
 
-**A**: Discount code can be requested by every user, but is made available for every nth order only. The discount code can be used only once before the next one becomes available on the next nth order.
+  ```json
+  {
+    "correlationId": "7e90a86d-1eae-4b27-a59d-58593e3f8d94",
+    "message": "Item added to cart"
+  }
+  ```
 
-**Q**: Does the discount code apply to one item?
+### 2: Checkout
 
-**A**: Discount code applies to the entire order.
+- **Endpoint:** `POST /cart/checkout`
+- **Description:** Proceeds with the checkout process for the items in the cart without applying any discounts.
+- **Request Body:**
 
-All the best!
+  ```json
+  {
+    "discountId": "c78a5ef1-1e7a-44da-8576-ceed2e0bd335" // Optional
+  }
+  ```
+
+- **Expected Response:**
+
+  ```json
+  {
+    "order": {
+      "cart": {
+        "items": [
+          {
+            "productId": "prod-001",
+            "quantity": 2,
+            "price": 1000
+          }
+        ],
+        "totalCartValue": 2000
+      },
+      "discountDetails": {
+        // AdditionalField
+        "expiresAt": "2024-11-12T16:33:57.360Z",
+        "used": true,
+        "id": "c78a5ef1-1e7a-44da-8576-ceed2e0bd335",
+        "code": "10_PERCENT"
+      },
+      "discountValue": 200, // AdditionalField
+      "orderId": "order-1731342855624",
+      "orderValue": 1800
+    }
+  }
+  ```
+
+### 3: Generate Discount Code
+
+- **Endpoint:** `POST /admin/generate-discount-code`
+- **Description:** Generates a discount code for the user.
+- **Request Body:**
+
+  ```json
+  {}
+  ```
+
+- **Expected Response:**
+
+  ```json
+  {
+    "message": "Discount code generated",
+    "discountCode": "DISCOUNT123",
+    "correlationId": "7e90a86d-1eae-4b27-a59d-58593e3f8d94"
+  }
+  ```
+
+### 4: Get Orders Analysis
+
+- **Endpoint:** `GET /admin/orders-analytics`
+
+- **Description:** Retrieves a summary of all placed orders, including key analytics.
+
+- **Expected Response:**
+
+  ```json
+  {
+    "summary": {
+      "totalOrders": 3,
+      "itemCount": 6,
+      "totalAmount": 5800,
+      "discountCodes": ["10_PERCENT"],
+      "totalDiscountAmount": 200
+    },
+    "correlationId": "63b0cef3-5972-44b1-b48d-7ed588e6d8af"
+  }
+  ```
+
+### 5 Authorization:
+
+- Ensure that a valid bearer token is provided in the `Authorization` header for this endpoint.
+
+- **Example of Authorization Header:**
+
+  ```
+  Authorization: Bearer YOUR_ACCESS_TOKEN
+  ```
+
+- Replace `YOUR_ACCESS_TOKEN` with the actual token obtained from the authentication service.
+
+### Example Flow - Add Item, Generate Discount, Then Checkout with Discount
+
+1. **Add Item:**
+
+   - Use the `/cart/add-item` endpoint to add items to the cart.
+
+2. **Generate Discount:**
+
+   - Use the `/admin/generate-discount-code` endpoint. If successful, a `discountCode` will be returned.
+
+3. **Checkout with Discount:**
+
+   - Pass the obtained `discountCode` in the checkout request body to apply the discount during checkout.
+
+   - **Sample Request for Checkout with Discount Code:**
+
+     **Endpoint:** `POST /cart/checkout`
+
+     **Request Body:**
+
+     ```json
+     {
+       "discountId": "c78a5ef1-1e7a-44da-8576-ceed2e0bd335"
+     }
+     ```
+
+     **Expected Response:**
+
+     ```json
+     {
+       "order": {
+         "cart": {
+           "items": [
+             {
+               "productId": "prod-001",
+               "quantity": 2,
+               "price": 1000
+             }
+           ],
+           "totalCartValue": 2000
+         },
+         "discountDetails": {
+           "expiresAt": "2024-11-12T16:33:57.360Z",
+           "used": true,
+           "id": "c78a5ef1-1e7a-44da-8576-ceed2e0bd335",
+           "code": "10_PERCENT"
+         },
+         "discountValue": 200,
+         "orderId": "order-1731342855624",
+         "orderValue": 1800
+       }
+     }
+     ```
+
+4. **Authorization:**
+
+- Ensure that a valid bearer token is provided in the `Authorization` header for all endpoints that require authentication.
+
+- **Example of Authorization Header:**
+
+  ```
+  Authorization: Bearer YOUR_ACCESS_TOKEN
+  ```
+
+- Replace `YOUR_ACCESS_TOKEN` with the actual token obtained from the authentication service.
