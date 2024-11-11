@@ -1,0 +1,149 @@
+{
+	"info": {
+		"_postman_id": "9b259879-7bcd-466d-89f3-2b38a63d8a34",
+		"name": "Ecomm Backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27806488"
+	},
+	"item": [
+		{
+			"name": "getOrdersanalysis",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/admin//orders-analytics",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"",
+						"orders-analytics"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Generate Discount Code",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/admin/generate-discount-code",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"generate-discount-code"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add Item to Cart",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"productId\": \"prod-001\",\n    \"quantity\": 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/cart/add-item",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cart",
+						"add-item"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "checkout",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"discountId\": \"c78a5ef1-1e7a-44da-8576-ceed2e0bd335\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/cart/checkout",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cart",
+						"checkout"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiaGFyc2giLCJleHAiOjIwNDY2NzgxNzh9.nAbir7V72ItzkilGVUXBrpDQvspkc-IfVb78onAkBBg",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "localhost:3000",
+			"type": "string"
+		}
+	]
+}
