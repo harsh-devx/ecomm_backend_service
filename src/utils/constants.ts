@@ -1,3 +1,4 @@
+import type { Cart } from "../models/Cart";
 
 
 export interface Product {
@@ -14,3 +15,21 @@ export const STORE: { [key: string]: Product } = {
     "prod-004": { id: "prod-004", name: "Smartwatch", price: 150, stock: 30 },
     "prod-005": { id: "prod-005", name: "Tablet", price: 300, stock: 15 },
 };
+
+export enum DiscountType {
+    TEN_PERCENT = "10_PERCENT",
+    TWENTY_PERCENT = "20_PERCENT",
+}
+
+
+export const discountMapper: { [key in DiscountType]: (cart: Cart) => number } = {
+    [DiscountType.TEN_PERCENT]: (cart: Cart) => {
+        const total = cart.totalCartValue;
+        return total * 0.1;
+    },
+    [DiscountType.TWENTY_PERCENT]: (cart: Cart) => {
+        const total = cart.totalCartValue;
+        return total * 0.2;
+    },
+};
+
